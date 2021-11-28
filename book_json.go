@@ -3,11 +3,12 @@ package notes
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 )
 
 type bookJSON struct {
-	CurID int           `json:"cur_id,omitempty"`
-	Notes map[int]*Note `json:"notes,omitempty"`
+	CurID int     `json:"cur_id,omitempty"`
+	Notes []*Note `json:"notes,omitempty"`
 }
 
 // MarshalJSON returns the JSON encoding of the book.
@@ -16,9 +17,24 @@ func (book *Book) MarshalJSON() ([]byte, error) {
 		return nil, fmt.Errorf("book is nil")
 	}
 
+	key := make([]int, 0, len(book.notes))
+
+	for k := range book.notes {
+		key = append(key, k)
+	}
+
+	notes := make([]*Note, 0, len(book.notes))
+	for _, k := range key {
+		notes = append(notes, book.notes[k])
+	}
+
+	sort.Slice(notes, func(i, j int) bool {
+		return notes[i].ID() < notes[j].ID()
+	})
+
 	b := bookJSON{
 		CurID: book.curID,
-		Notes: book.notes,
+		Notes: notes,
 	}
 
 	return json.MarshalIndent(b, "", "  ")
@@ -37,7 +53,11 @@ func (book *Book) UnmarshalJSON(data []byte) error {
 	}
 
 	book.curID = b.CurID
-	book.notes = b.Notes
+	book.notes = map[int]*Note{}
+
+	for _, n := range b.Notes {
+		book.notes[n.ID()] = n
+	}
 
 	return nil
 }
