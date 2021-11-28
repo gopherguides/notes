@@ -1,6 +1,9 @@
 package notes
 
-import "fmt"
+import (
+	"fmt"
+	"sort"
+)
 
 // Select returns the notes that match the given ids.
 // If no ids are given, all notes are returned.
@@ -31,6 +34,10 @@ func (book *Book) Select(ids ...int) ([]*Note, error) {
 		notes = append(notes, note)
 
 	}
+
+	sort.Slice(notes, func(i, j int) bool {
+		return notes[i].ID() < notes[j].ID()
+	})
 
 	book.log("[SELECT]\tfound:\t%d\n", len(notes))
 
