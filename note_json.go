@@ -14,12 +14,12 @@ type noteJSON struct {
 
 // MarshalJSON returns the JSON encoding of the note.
 func (note *Note) MarshalJSON() ([]byte, error) {
-	return json.MarshalIndent(noteJSON{
+	return json.Marshal(noteJSON{
 		ID:        note.id,
 		Body:      note.Body,
 		CreatedAt: note.createdAt,
 		UpdatedAt: note.updatedAt,
-	}, "", "  ")
+	})
 }
 
 // UnmarshalJSON parses the JSON-encoded data and

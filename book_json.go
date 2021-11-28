@@ -37,7 +37,7 @@ func (book *Book) MarshalJSON() ([]byte, error) {
 		Notes: notes,
 	}
 
-	return json.MarshalIndent(b, "", "  ")
+	return json.Marshal(b)
 }
 
 // UnmarshalJSON parses the JSON-encoded data and
